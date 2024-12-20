@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* Ensures full vertical height */
+            align-items: center;
+            font-family: Arial, sans-serif;
+            background-image: url(graybackground.jpg);
+        }
+        header {
+            width: 100%;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #d6d6d6;
+            padding: 20px;
+            position: fixed; /* Keeps the header at the top */
+            z-index: 1000; /* Keeps header above all other content */
+        }
+        .upload-container, .content-area {
+            width: 80%;
+            max-width: 600px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            background-color: #cecece;
+            margin-top: 20px;
+        }
+        .upload-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        input[type="file"] {
+            width: 100%;
+            padding: 8px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .content-area {
+            height: 70vh; /* Responsive height */
+            background-color: #d8d8d8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        main {
+            width: 100%; /* Takes the full width */
+            padding-top: 80px; /* Space for fixed header */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        a {
+            text-decoration: none;
+            color: black;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<script src="playspace.js"></script>
+<body>
+    <header>
+        <a href="http://erniewang.org/" style="font-size: 27px;">Ernie Wang</a>
+        <button onclick="window.location.href='/'" style="right: 55px;">Return to Front Page</button>
+    </header>
+    <main>
+        <div class="upload-container">
+            <input type="file" id="file-input">
+            <button onclick="sendFile()" id="sendingButton">Send File</button>
+        </div>
+        <div class="content-area">
+            <!-- Additional content can go here -->
+
+        </div>
+    </main>
+</body>
+</html>

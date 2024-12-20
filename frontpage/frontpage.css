@@ -1,0 +1,151 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+    font-family: 'Arial', sans-serif;
+    scroll-behavior: smooth;
+}
+
+body {
+    color: #fff;
+    background-color: #2D2D2D;
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header Styles */
+.site-header {
+    opacity: .6;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #E6E6E6;
+    color: #333;
+    padding: 20px 40px;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.logo h1 {
+    font-size: 1.8rem;
+    font-weight: bold;
+}
+
+.header-nav {
+    display: flex;
+    gap: 20px;
+}
+
+.header-nav a {
+    text-decoration: none;
+    color: #333;
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+.header-nav a:hover {
+    background-color: #4A90E2;
+    color: #fff;
+}
+
+.btn-primary {
+    background-color: #4A90E2;
+    color: #fff !important;
+    padding: 10px 20px;
+    border-radius: 5px;
+    transition: background 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #3a6fa5;
+}
+
+/* Sections Styles */
+.section {
+    min-height: 100vh;
+    padding: 100px 40px;
+    text-align: center;
+}
+
+.about-section {
+    padding-top: 150px;
+    background-color: #444;
+    font-size: 2em;
+    line-height: 40px;
+}
+
+.samples-section {
+    background-color: #555;
+    background-image: url(glennmiller.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+    opacity: 0.85;
+}
+
+.process-section {
+    background-image: url(robotsmusic.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+    text-align: left;
+    font-size: 1.31em;
+    opacity: 0.75;
+}
+
+.section h2 {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    color: #fff;
+}
+
+.section p {
+    max-width: 700px;
+    margin: 0 auto 20px;
+    font-size: 1.2rem;
+    color: #ddd;
+}
+
+.btn-primary {
+    display: inline-block;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+/* Media Query for wide screens where width is more than 3 times the height */
+/* Responsive adjustments */
+@media (max-height: 500px) {
+
+    .about-section, .samples-section, .process-section {
+        font-size: 1em; /* Decreasing font size for better readability on small screens */
+        line-height: 24px;
+        padding-top: 76px;
+    }
+    .site-header {
+        height: 70px;
+    }
+
+}
+
+@media (max-height: 300px) {
+    html {
+        display: none;
+    }
+}
+
+@media (max-width: 500px) {
+    html {
+        display: none;
+    }
+}
