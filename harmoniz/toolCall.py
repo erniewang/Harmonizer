@@ -22,6 +22,7 @@ def upgrade_chord(chord):
         "aug": "aug7",  # Augmented chords to augmented 7th
         #"": "maj7", this fucks up everythin
         "m": "m7",  # Minor chords to minor 7th
+        'ø7': "dim7"
     }
 
     # Upgrade the chord based on the map
@@ -129,7 +130,7 @@ def parse(file_path, name):
     except FileNotFoundError:
         pass
 
-    score.write("musicxml", f"results/{name}_Modified.musicxml")
+    score.write("musicxml","results.musicxml")
 
 
 if __name__ == "__main__":
