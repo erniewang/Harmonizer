@@ -24,7 +24,8 @@ class Item(BaseModel):
 
 @app.post("/items/")
 def create_item(item: Item):
-    file_name = "unpreparedMusic.musicxml"
+    file_name = "unpreparedMusic.musicxml" 
+    #clear file
     open(file_name, 'w').close()
     f = open(file_name, "a")
     f.write(item.data)
@@ -33,8 +34,6 @@ def create_item(item: Item):
         return "Music cannot have any written chords"
     parse(file_name, "placeHolder")
 
-    #with open("results.musicxml", 'r') as file:
-        #return file.read().replace("\n  ", "")
     with open("results.musicxml", "r") as file:
         content = file.read()
     return Response(
