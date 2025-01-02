@@ -14,10 +14,16 @@
     <main>
         <div class="upload-container">
             <input type="file" id="file-input">
+            <select id="dropdown" name="options" style="margin-right: 5px;">
+                <option value="Count_Basie">Count Basie Style</option>
+                <option value="Gil_Evans">Gil Evans Style</option>
+                <option value="Ernie">Ernie Style</option>
+                <option value="Custom">Your Own Style</option>
+            </select>
             <button onclick="sendFile()" id="sendingButton">Send File</button>
         </div>
         <div class="content-area">
-            <!-- Additional content can go here -->
+            <iframe src="dictionaryTest.html" title="description" style="height: 100%; width: 78%;"></iframe> 
         </div>
     </main>
     <script src="playspace.js"></script>

@@ -10,6 +10,7 @@ f = open(json_path)
 data = json.load(f)
 f.close()
 
+new_chords = {}
 
 def split(chord_f):
     start = None
@@ -21,20 +22,32 @@ def split(chord_f):
 
 
 def dictionary_lookup(note, chord, style):
+    try:
+        # figure out the difference between the note and the root of the chord
+        note_number = note.pitch.midi
 
-    # figure out the difference between the note and the root of the chord
-    note_number = note.pitch.midi
+        # grab the corrosponding part
+        chord_root_number = chord.bass().midi
 
-    # grab the corrosponding part
-    chord_root_number = chord.bass().midi
+        # get the amount of change needed
+        difference = (note_number % 12) - (chord_root_number % 12)
+        if difference < 0:
+            difference += 12
 
-    # get the amount of change needed
-    difference = (note_number % 12) - (chord_root_number % 12)
-    if difference < 0:
-        difference += 12
-
-    # chordtone that shit
-    new_chord = data[style][split(chord.figure)][difference]
-    new_root = chord.bass().transpose(new_chord[0])
-    new_chord = new_root.name + str(new_chord[1])
-    return harmony.ChordSymbol(new_chord)
+        # chordtone that shit
+        new_chord = data[style][split(chord.figure)][difference]
+        new_root = chord.bass().transpose(new_chord[0])
+        new_chord = new_root.name + str(new_chord[1])
+        return harmony.ChordSymbol(new_chord)
+    
+    except KeyError:
+        print(style)
+        print("aint exists or something else fucked up")
+        return None
+        if str(chord) not in new_chords:
+            answer = input("aint gonna work, enter another chord: ") #try to combine these two
+            new_chords[str(chord)] = answer
+            return harmony.ChordSymbol(answer)
+        else:
+            return harmony.ChordSymbol(new_chords[str(chord)])
+        #fix this shit

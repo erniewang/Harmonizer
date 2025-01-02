@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Custom Rule Maker</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 20px;
+      background: #f5f5f5;
+    }
+    .chord-rule-maker {
+      width: 360px;
+      border: 1px solid #ccc;
+      padding: 1rem;
+      background: #fff;
+    }
+    .crm-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .crm-header h3 {
+      margin: 0;
+      font-size: 1.2rem;
+    }
+
+    /* Slider switch (for global on/off) */
+    .slider-switch {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 22px;
+    }
+    .slider-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider-toggle {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #ccc;
+      border-radius: 34px;
+    }
+    .slider-toggle:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      border-radius: 50%;
+      transition: .4s;
+    }
+    .slider-switch input:checked + .slider-toggle {
+      background-color: #2196F3;
+    }
+    .slider-switch input:checked + .slider-toggle:before {
+      transform: translateX(18px);
+    }
+
+    .crm-nav {
+      display: flex;
+      justify-content: space-between;
+      margin: 1rem 0;
+    }
+    .nav-btn, #deleteBtn, #addChordBtn {
+      padding: 0.4rem 0.8rem;
+      cursor: pointer;
+      border: 1px solid #aaa;
+      background: #eee;
+      transition: background 0.2s ease;
+      font-size: 0.9rem;
+    }
+    .nav-btn:hover, #deleteBtn:hover, #addChordBtn:hover {
+      background: #ddd;
+    }
+
+    .chord-type-area {
+      text-align: center;
+      margin-bottom: 0.5rem;
+    }
+    /* Display chord name as either text or input */
+    #chordNameLabel {
+      font-weight: bold;
+      font-size: 1rem;
+      margin: 0;
+    }
+    #chordNameInput {
+      font-size: 1rem;
+      text-align: center;
+      border: 1px solid #ccc;
+      padding: 2px;
+      width: 180px;
+    }
+
+    /* The scrollable container for the 12 boxes. */
+    .crm-rule-list {
+      max-height: 300px;      
+      overflow-y: auto;       
+      border: 1px solid #ddd;
+      padding: 0.5rem;
+      margin-bottom: 1rem;
+      background: #fafafa;
+    }
+
+    .crm-rule {
+      display: flex;
+      flex-direction: column;
+      border: 1px solid #ddd;
+      margin: 0.2rem 0;
+      padding: 0.5rem;
+      background: #fff;
+    }
+    .note-label {
+      font-weight: bold;
+      margin-bottom: 0.3rem;
+    }
+    .substitution {
+      display: flex;
+      align-items: center;
+      margin: 0.2rem 0;
+    }
+    .substitution label {
+      width: 90px;
+      font-size: 0.85rem;
+    }
+    .substitution select {
+      width: 120px;
+      margin-left: 0.4rem;
+    }
+    .substitution input[type="text"] {
+      width: 70px;
+      margin-left: 0.4rem;
+    }
+
+    .bottom-buttons {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    #export-btn {
+      padding: 0.4rem 1rem;
+      cursor: pointer;
+      border: 1px solid #aaa;
+      background: #eee;
+      transition: background 0.2s ease;
+      font-size: 0.9rem;
+    }
+    #export-btn:hover {
+      background: #ddd;
+    }
+  </style>
+</head>
+<body>
+
+<div class="chord-rule-maker">
+  <!-- Header with slider (if you want a global on/off switch) -->
+  <div class="crm-header">
+    <h3>Custom Rule Maker</h3>
+    <label class="slider-switch">
+      <input type="checkbox" id="globalToggle" />
+      <span class="slider-toggle"></span>
+    </label>
+  </div>
+
+  <!-- Add Chord button at the top (to create a new, empty chord) -->
+  <button id="addChordBtn">Add Chord</button>
+
+  <!-- Navigation to move between chord types and optional delete -->
+  <div class="crm-nav">
+    <button class="nav-btn" id="prevBtn">Previous</button>
+    <button class="nav-btn" id="nextBtn">Next</button>
+  </div>
+
+  <!-- Potential delete button (only if user-created chord) -->
+  <div style="text-align:center; margin-bottom: 0.5rem;">
+    <button id="deleteBtn" style="display:none;">Delete Chord</button>
+  </div>
+
+  <!-- Chord name label or input -->
+  <div class="chord-type-area">
+    <!-- We show either a read-only label (for system chords) or an input (for user chords) -->
+    <span id="chordNameLabel" style="display:none;"></span>
+    <input type="text" id="chordNameInput" style="display:none;" />
+  </div>
+
+  <!-- Scrollable container of 12 semitone rules -->
+  <div class="crm-rule-list" id="ruleList">
+    <!-- 12 “crm-rule” items will be injected here by JS -->
+  </div>
+
+  <div class="bottom-buttons">
+    <!-- Export button at the bottom -->
+    <button id="export-btn">Export JSON</button>
+  </div>
+</div>
+
+<script>
+/* 
+  Example Data (the big JSON from your question).
+  Mark the 14 original chords as system chords,
+  but store them in a single chordRulesData with an additional property "systemChord".
+*/
+const chordRulesData = {
+  "": {
+    systemChord: true,
+    rules: [
+      [0, "7"], [-1, "7"], [2, "m7"], [-1, "7"], [0, "7"], [2, "m7"], [1, "7"], [0, "7"], [11, "dim7"], [0, "add 6"], [0, "7"], [0, "maj7"]
+    ]
+  },
+  "maj7 add 6": {
+    systemChord: true,
+    rules: [
+      [0, "7"], [-1, "7"], [2, "m7"], [-1, "7"], [0, "7"], [2, "m7"], [1, "7"], [0, "7"], [11, "dim7"], [0, "add 6"], [0, "7"], [0, "maj7"]
+    ]
+  },
+  "7": {
+    systemChord: true,
+    rules: [
+      [0, "7"], [-1, "7"], [2, "m7"], [-1, "7"], [0, "7"], [2, "m7"], [1, "7"], [0, "7"], [11, "dim7"], [0, "add 6"], [0, "7"], [0, "maj7"]
+    ]
+  },
+  "9": {
+    systemChord: true,
+    rules: [
+      [0, "7"], [-1, "7"], [2, "m7"], [-1, "7"], [0, "7"], [2, "m7"], [1, "7"], [0, "7"], [11, "dim7"], [0, "add 6"], [0, "7"], [0, "maj7"]
+    ]
+  },
+  "13": {
+    systemChord: true,
+    rules: [
+      ["", "13"], ["", "7"], ["", "m7"], ["", "13"], ["", "13"], ["", "13"], ["", "13"], ["", "13"], ["", "13"], ["", "13"], ["", "13"], ["", "13"]
+    ]
+  },
+  "maj": {
+    systemChord: true,
+    rules: [
+      [0, "maj7"], [-1, "7"], [2, "m7"], [-1, "maj7"], [0, "maj7"], [2, "m7"], [-1, "maj7"], [0, "maj7"], [8, "maj7"], [0, "add 6"], [-1, "maj7"], [0, "maj7"]
+    ]
+  },
+  "maj7": {
+    systemChord: true,
+    rules: [
+      [0, "maj7"], [-1, "7"], [2, "m7"], [-1, "maj7"], [0, "maj7"], [2, "m7"], [-1, "maj7"], [0, "maj7"], [8, "maj7"], [0, "add 6"], [-1, "maj7"], [0, "maj7"]
+    ]
+  },
+  "m": {
+    systemChord: true,
+    rules: [
+      [0, "m"], [-1, "7"], [2, "m9"], [0, "m7"], [1, "m7"], [2, "m7 add b5"], [0, "dim7"], [0, "m7"], [8, "maj7"], [0, "m6"], [0, "m7"], [0, "mM7"]
+    ]
+  },
+  "m7": {
+    systemChord: true,
+    rules: [
+      [0, "m"], [-1, "7"], [0, "m9"], [0, "m7"], [1, "m7"], [2, "m7 add b5"], [0, "dim7"], [0, "m7"], [8, "maj7"], [0, "m6"], [0, "m7"], [0, "mM7"]
+    ]
+  },
+  "m9": {
+    systemChord: true,
+    rules: [
+      [0, "m"], [-1, "7"], [0, "m9"], [0, "m7"], [1, "m7"], [2, "m7 add b5"], [0, "dim7"], [0, "m7"], [8, "maj7"], [0, "m6"], [0, "m7"], [0, "mM7"]
+    ]
+  },
+  "dim": {
+    systemChord: true,
+    rules: [
+      ["", "dim"], ["", "7"], ["", "m7"], ["", "dim"], ["", "dim"], ["", "dim"], ["", "dim"], ["", "dim"], ["", "dim"], ["", "dim"], ["", "dim"], ["", "dim"]
+    ]
+  },
+  "dim7": {
+    systemChord: true,
+    rules: [
+      ["", "dim7"], ["", "7"], ["", "m7"], ["", "dim7"], ["", "dim7"], ["", "dim7"], ["", "dim7"], ["", "dim7"], ["", "dim7"], ["", "dim7"], ["", "dim7"], ["", "dim7"]
+    ]
+  },
+  "aug": {
+    systemChord: true,
+    rules: [
+      ["", "aug"], ["", "7"], ["", "m7"], ["", "aug"], ["", "aug"], ["", "aug"], ["", "aug"], ["", "aug"], ["", "aug"], ["", "aug"], ["", "aug"], ["", "aug"]
+    ]
+  },
+  "aug7": {
+    systemChord: true,
+    rules: [
+      ["", "aug7"], ["", "7"], ["", "m7"], ["", "aug7"], ["", "aug7"], ["", "aug7"], ["", "aug7"], ["", "aug7"], ["", "aug7"], ["", "aug7"], ["", "aug7"], ["", "aug7"]
+    ]
+  }
+};
+
+/* Notes map for Root Chord select. */
+const notesArray = [
+  { name: "C",      value: 0  },
+  { name: "C# / Db",value: 1  },
+  { name: "D",      value: 2  },
+  { name: "D# / Eb",value: 3  },
+  { name: "E",      value: 4  },
+  { name: "F",      value: 5  },
+  { name: "F# / Gb",value: 6  },
+  { name: "G",      value: 7  },
+  { name: "G# / Ab",value: 8  },
+  { name: "A",      value: 9  },
+  { name: "A# / Bb",value: 10 },
+  { name: "B",      value: 11 }
+];
+
+/* Extract an ordered chord list from chordRulesData’s keys. */
+let chordTypes = Object.keys(chordRulesData);
+
+/* Keep track of which chord type we’re showing. */
+let currentChordIndex = 0;
+
+/* References to DOM elements. */
+const chordNameLabel = document.getElementById('chordNameLabel');
+const chordNameInput = document.getElementById('chordNameInput');
+const ruleList        = document.getElementById('ruleList');
+const prevBtn         = document.getElementById('prevBtn');
+const nextBtn         = document.getElementById('nextBtn');
+const exportBtn       = document.getElementById('export-btn');
+const addChordBtn     = document.getElementById('addChordBtn');
+const deleteBtn       = document.getElementById('deleteBtn');
+
+/* --- Rendering --- */
+
+/**
+ * Renders the current chord’s 12 rules in the scrollable area.
+ * Also sets up the chord name label or input (depending on systemChord).
+ */
+function renderChord() {
+  // Which chord name are we using?
+  const chordName = chordTypes[currentChordIndex];
+  const chordData = chordRulesData[chordName];
+  const { systemChord, rules } = chordData;
+
+  // If it’s system chord => show read-only label
+  // If it’s user chord => show input
+  if (systemChord) {
+    chordNameLabel.textContent = chordName;
+    chordNameLabel.style.display = "inline";
+    chordNameInput.style.display = "none";
+    deleteBtn.style.display = "none";
+  } else {
+    chordNameLabel.style.display = "none";
+    chordNameInput.style.display = "inline";
+    chordNameInput.value = chordName;
+    deleteBtn.style.display = "inline";
+  }
+
+  // Clear out the existing list
+  ruleList.innerHTML = "";
+
+  // For each semitone (0..11), create a box
+  for (let i = 0; i < 12; i++) {
+    // Each rule is [rootOffset, extension]
+    const [rootOffset, extension] = rules[i];
+
+    const ruleDiv = document.createElement('div');
+    ruleDiv.className = 'crm-rule';
+    ruleDiv.dataset.semitone = i;
+
+    const noteLabelDiv = document.createElement('div');
+    noteLabelDiv.className = 'note-label';
+    noteLabelDiv.textContent = notesArray[i].name;  // e.g., “C”, “C# / Db”
+    ruleDiv.appendChild(noteLabelDiv);
+
+    // Root chord -> <select>
+    const sub1 = document.createElement('div');
+    sub1.className = 'substitution';
+    
+    // Build the <select> for root chord
+    const selectHTML = buildRootChordSelectHTML(rootOffset);
+    sub1.innerHTML = `
+      <label>Root Chord:</label>
+      ${selectHTML}
+    `;
+    ruleDiv.appendChild(sub1);
+
+    // Extension -> text input
+    const sub2 = document.createElement('div');
+    sub2.className = 'substitution';
+    sub2.innerHTML = `
+      <label>Extension:</label>
+      <input type="text" class="extension" value="${extension}" />
+    `;
+    ruleDiv.appendChild(sub2);
+
+    ruleList.appendChild(ruleDiv);
+  }
+}
+
+/**
+ * Builds the HTML for the Root Chord <select> with the correct option selected.
+ */
+function buildRootChordSelectHTML(selectedOffset) {
+  let html = `<select class="root-chord-select">`;
+  notesArray.forEach(note => {
+    const isSelected = (note.value == selectedOffset) ? "selected" : "";
+    html += `<option value="${note.value}" ${isSelected}>${note.name}</option>`;
+  });
+  html += `</select>`;
+  return html;
+}
+
+/* Save changes from the UI into chordRulesData before leaving the current chord. */
+function saveCurrentChordEdits() {
+  const chordName = chordTypes[currentChordIndex];
+  const chordData = chordRulesData[chordName];
+  const { systemChord, rules } = chordData;
+
+  // If user chord, rename if changed
+  if (!systemChord) {
+    // If the user changed the chord name in the text input, update key.
+    const newChordName = chordNameInput.value.trim();
+    if (newChordName && newChordName !== chordName) {
+      // Check if newChordName already exists (simple collision avoidance).
+      if (chordRulesData[newChordName]) {
+        alert("Chord name already exists. Keeping old name.");
+      } else {
+        // rename the key in chordRulesData
+        chordRulesData[newChordName] = chordRulesData[chordName];
+        delete chordRulesData[chordName];
+        // update the chordTypes array
+        chordTypes = chordTypes.map(c => c === chordName ? newChordName : c);
+        // also we must adjust currentChordIndex to match the new name
+        chordTypes.sort(); // optional if we want alphabetical, or remove to keep order
+        currentChordIndex = chordTypes.indexOf(newChordName);
+      }
+    }
+  }
+
+  // Now retrieve the final chord name again (in case it changed).
+  const finalChordName = chordTypes[currentChordIndex];
+  const finalChordData = chordRulesData[finalChordName];
+
+  // For each .crm-rule in #ruleList, read the inputs.
+  const ruleDivs = ruleList.querySelectorAll('.crm-rule');
+  ruleDivs.forEach(div => {
+    const semitoneIndex = Number(div.dataset.semitone);
+
+    // <select class="root-chord-select">
+    const selectEl = div.querySelector('.root-chord-select');
+    const newRootOffset = parseInt(selectEl.value, 10) || 0;
+
+    // .extension text input
+    const extensionInput  = div.querySelector('.extension');
+    const newExtension  = extensionInput.value;
+
+    finalChordData.rules[semitoneIndex] = [newRootOffset, newExtension];
+  });
+}
+
+/* Navigation: previous or next chord. */
+function goToChord(offset) {
+  // Save current text fields back into chordRulesData
+  saveCurrentChordEdits();
+
+  currentChordIndex += offset;
+  // Wrap around if out of range
+  if (currentChordIndex < 0) {
+    currentChordIndex = chordTypes.length - 1;
+  } else if (currentChordIndex >= chordTypes.length) {
+    currentChordIndex = 0;
+  }
+
+  renderChord();
+}
+
+/* Add a new chord with empty data. */
+function addNewChord() {
+  // Save current chord’s changes first
+  saveCurrentChordEdits();
+
+  // Create a unique name e.g. "empty chord", but if that already exists, add suffix
+  let baseName = "empty chord";
+  let uniqueName = baseName;
+  let counter = 1;
+  while (chordRulesData[uniqueName]) {
+    uniqueName = baseName + " " + counter;
+    counter++;
+  }
+
+  // Initialize the new chord with userChord = false?
+  // Actually we want systemChord: false.
+  chordRulesData[uniqueName] = {
+    systemChord: false,
+    rules: [
+      [0, ""],[0, ""],[0, ""],[0, ""],[0, ""],[0, ""],[0, ""],[0, ""],[0, ""],[0, ""],[0, ""],[0, ""]
+    ]
+  };
+
+  // Insert the new chord name into chordTypes array
+  chordTypes.push(uniqueName);
+  // Optionally, re-sort chordTypes or not. If you want to keep them in the order added, skip this.
+  // chordTypes.sort();
+
+  // Move to that new chord
+  currentChordIndex = chordTypes.indexOf(uniqueName);
+
+  renderChord();
+}
+
+/* Delete the current chord (only if user-created). */
+function deleteCurrentChord() {
+  const chordName = chordTypes[currentChordIndex];
+  const chordData = chordRulesData[chordName];
+
+  if (chordData.systemChord) {
+    alert("You cannot delete system chords.");
+    return;
+  }
+  
+  // Remove from chordRulesData
+  delete chordRulesData[chordName];
+
+  // Remove from chordTypes array
+  chordTypes = chordTypes.filter(c => c !== chordName);
+
+  // Go to previous chord if possible, or 0 if none left
+  if (currentChordIndex >= chordTypes.length) {
+    currentChordIndex = chordTypes.length - 1;
+  }
+  if (currentChordIndex < 0) {
+    currentChordIndex = 0;
+  }
+  renderChord();
+}
+
+var jsonString;
+
+/* Export button: saves the current chord’s edits, then sends to the server */
+
+function exportToJSON() {
+    saveCurrentChordEdits();
+
+    // Disable the export button
+    exportBtn.disabled = true;
+    exportBtn.innerText = "Exporting...";
+
+    // Create a simplified structure for export
+    const exportData = {};
+    Object.keys(chordRulesData).forEach(chName => {
+        exportData[chName] = chordRulesData[chName].rules;
+    });
+
+    // Prepare the payload
+    const payload = {
+        name: "oldName", // Placeholder name; will be replaced by IP
+        data: exportData
+    };
+
+    // Fetch the user's public IP address, then send the payload to the server
+    fetch('https://api.ipify.org/?format=json')
+        .then(results => results.json()) // Get JSON response from the IP API
+        .then(data => {
+            payload.name = data.ip; // Update the payload name with the IP address
+            console.log(payload);
+            // Send the updated payload to the server
+            return fetch('http://127.0.0.1:8000/rules/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Server responded with status ${response.status}`);
+            }
+            return response.text(); // Get the server's response text
+        })
+        .then(data => {
+            console.log('Response from server:', data); // Log the server response
+        })
+        .catch(error => console.error('Error:', error)) // Handle any errors
+        .finally(() => {
+            // Re-enable the export button after the request completes
+            exportBtn.disabled = false;
+            exportBtn.innerText = "Export to JSON";
+        });
+}
+
+
+
+
+/* --- Event listeners --- */
+prevBtn.addEventListener('click', () => goToChord(-1));
+nextBtn.addEventListener('click', () => goToChord(1));
+exportBtn.addEventListener('click', exportToJSON);
+addChordBtn.addEventListener('click', addNewChord);
+deleteBtn.addEventListener('click', deleteCurrentChord);
+
+/* Initialize the UI by sorting chordTypes (optional) and showing the first chord. */
+chordTypes.sort();  // If you want alphabetical. If not, remove this line.
+renderChord();
+
+</script>
+</body>
+</html>

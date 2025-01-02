@@ -2,13 +2,34 @@
 var songName = null;
 var sendingStatus = false;
 
+//HTML specific functions
+let user_style = document.getElementById("dropdown").value;
+const updateUserStyle = (event) => {
+    if (event.target.value == "Custom") {
+        fetch('https://api.ipify.org/?format=json')
+        .then(results => results.json()) // Get JSON response from the IP API
+        .then(data => {
+            user_style = data.ip;
+            // Send the updated payload to the server
+        })
+    }
+    user_style = event.target.value;
+};
+document.getElementById("dropdown").addEventListener("change", updateUserStyle);
+
 //making sure the file is valid before sending
 async function sendFile() {
     if (sendingStatus == true) {
         document.getElementById("sendingButton").innerText = "Patience...";
         return;
     }
+
     var input = document.getElementById('file-input');
+    if (input.files[0] == undefined) {
+        document.getElementById("sendingButton").innerText = "Needs File";
+        return;
+    }
+
     songName = input.files[0].name.slice(0,-9);
 
     if ((input.files[0] == undefined)||(input.files[0].name.slice(-3) != "xml")) {
@@ -45,7 +66,7 @@ async function actuallySend(FILE) {
                 'Content-Type': 'application/json' // Correct MIME type for JSON
             },
             body: JSON.stringify({name: 
-                "xml to be harmonized", data: reader.result})
+                "xml to be harmonized", style: user_style, data: reader.result})
         })
         .then(response => response.text()) // Extract the response text
         .then(data => {

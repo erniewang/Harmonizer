@@ -1,9 +1,7 @@
 from music21 import note, chord
 
-
 def skip_note(note):
     return note
-
 
 def diminished_chord(note, number_notes):
     answer_chord = [note]
