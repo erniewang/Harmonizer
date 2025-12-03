@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "harmonizer-2025"
+version = "0.1.0"
+description = "Tiny playground package for experimenting with MusicXML via music21."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "Your Name", email = "you@example.com" }]
+dependencies = [
+    "music21>=9.0.0",
+]
+
+[project.scripts]
+harmonizer-2025 = "harmonizer_2025.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+
