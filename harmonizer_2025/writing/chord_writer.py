@@ -55,33 +55,40 @@ def chordWriter(
     currChord: harmony.ChordSymbol,
     bible: Mapping[str, Any],
 ) -> chord.Chord:
+    #sanity checks 
 
     chord_data = None
     note_octave = root_note.octave
 
-    if currChord:
+    #get the interval in of the note in relation to the chord. also root is a pitch class for some reason
+    difference = abs(root_note.pitch.midi - currChord.root().midi) % 12
+    chord_figure = extractFigure(currChord.figure)
 
-        #get the interval between root and note
-        difference = abs(root_note.pitch.midi - currChord.root().midi) % 12
-        #root is a pitch class
+    try:
+        chord_dict = bible.get(chordRouter[chord_figure])
+        chord_data = chord_dict.get(str(difference))
+    except KeyError:
+        pass
+    except AttributeError:
+        print(f"No Data for {root_note} for {currChord.figure}") 
+        return
+        # do fallback style here
 
-        chord_figure = extractFigure(currChord.figure)
-        try:
-            chord_data = bible.get(chordRouter[chord_figure]).get(str(difference))
-            rootAsNote = note.Note(str(currChord.root()))
-            chord_data = [rootAsNote.transpose(distance) for distance in chord_data]
-            for i, chord_note in enumerate(chord_data):
-                #this is not going to work well with large voicings
-                chord_note.duration.quarterLength = root_note.duration.quarterLength
-                chord_note.octave = note_octave
-                #list.index(item) will not work if there are duplicate items. if there identical notes. later. the index searches for the first one
-                if chord_note.pitch.midi >= root_note.pitch.midi and i != 0:
-                    chord_note.transpose(-12, inPlace=True)
+    #create a note with the same properties as the root
+    rootAsNote = note.Note(str(currChord.root()))
+    rootAsNote.duration.quarterLength = root_note.duration.quarterLength
+    rootAsNote.octave = note_octave
 
-        except KeyError:
-            print(f"chord {currChord.figure} exists but not present in bible")
-        except AttributeError:
-            print(f"chord {currChord.figure} exists but not for that note")
+    chord_data = [rootAsNote.transpose(distance) for distance in chord_data]
+    chord_data[0] = root_note
+
+    
+    lead_note = chord_data[0]
+    for i in range(1, len(chord_data)):
+        chord_note = chord_data[i]
+        while chord_note.pitch.midi >= lead_note.pitch.midi:
+            chord_note = chord_note.transpose(-12)
+        chord_data[i] = chord_note
     return chord.Chord(chord_data)
 
 

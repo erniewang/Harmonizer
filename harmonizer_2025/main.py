@@ -14,7 +14,8 @@ from writing.chord_writer import chordWriter
 PathLike = Union[str, Path]
 
 BIBLE_PATH = Path(__file__).resolve().parent / "writing" / "data" / "gemBible.json"
-SELECTED_STYLE = "Generic"
+PRIMARY_STYLE = "Generic"
+FALLBACK_STYLE = "Generic"
 
 
 def harmonize(file_path: str, algorithm: dict) -> None:
@@ -25,7 +26,8 @@ def main() -> None:
     source_file = Path("../testFiles/chuWithChords.musicxml")
     with open(BIBLE_PATH, "r") as bible_file:
         bible_data = json.load(bible_file)
-    style_bible = bible_data.get(SELECTED_STYLE)
+    style_bible = bible_data.get(PRIMARY_STYLE)
+
     test_score = load_musicxml(source_file)
     modified = noteIterator(test_score, modifier=partial(chordWriter, bible=style_bible))
     output_path = write_score_to_results(modified, source_file)
