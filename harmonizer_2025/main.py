@@ -14,7 +14,7 @@ from writing.chord_writer import chordWriter
 PathLike = Union[str, Path]
 
 BIBLE_PATH = Path(__file__).resolve().parent / "writing" / "data" / "gemBible.json"
-PRIMARY_STYLE = "Generic"
+PRIMARY_STYLE = "GenericChromatic"
 FALLBACK_STYLE = "Generic"
 
 
