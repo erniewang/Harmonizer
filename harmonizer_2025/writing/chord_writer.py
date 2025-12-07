@@ -1,6 +1,28 @@
 from __future__ import annotations
+import builtins
 from music21 import chord, harmony, note
 from typing import Any, Mapping
+from config import SHOW_DEBUG_MESSAGES
+
+_PRINT_LIMIT = 50
+_print_count = 0
+_SUPPRESSION_NOTICE = (
+    "[chord_writer] Additional log output suppressed to keep the console readable."
+)
+
+
+def _limited_print(*args: Any, **kwargs: Any) -> None:
+    """Prevent runaway console spam from this module."""
+    global _print_count
+    if _print_count < _PRINT_LIMIT:
+        builtins.print(*args, **kwargs)
+        _print_count += 1
+        if _print_count == _PRINT_LIMIT:
+            builtins.print(_SUPPRESSION_NOTICE)
+
+
+print = _limited_print
+
 
 chordRouter = {
   "": "maj7",
@@ -50,29 +72,61 @@ chordRouter = {
 
 #attrs = [attr for attr in dir(note) if not attr.startswith('_')]
 # if i have chordRouter loaded in here. will be it open the whole duration of the program?
+def _debug(message: str) -> None:
+    if SHOW_DEBUG_MESSAGES:
+        print(message)
+
+
 def chordWriter(
     root_note: note.Note,
     currChord: harmony.ChordSymbol,
     bible: Mapping[str, Any],
 ) -> chord.Chord:
-    #sanity checks 
+    _debug(
+        f"Harmonizing note {root_note!s} "
+        f"with chord {currChord.figure if currChord else 'None'}"
+    )
+    if not currChord:
+        _debug("No existing chord found")
+        return
 
     chord_data = None
     note_octave = root_note.octave
 
-    #get the interval in of the note in relation to the chord. also root is a pitch class for some reason
     difference = abs(root_note.pitch.midi - currChord.root().midi) % 12
     chord_figure = extractFigure(currChord.figure)
 
     try:
         chord_dict = bible.get(chordRouter[chord_figure])
+    except KeyError:
+        print(f"chord {currChord.figure} does not exist in the router")
+        return
+    except AttributeError:
+        try:
+            print(f"{chordRouter[chord_figure]} does not exist in this version of the bible")
+        except KeyError:
+            print(f"{chord_figure} does not exist in the router nor the bible")
+        return
+    except Exception as e:
+        # Code to handle the exception
+        print(f"An unknown error occurred while trying to get the voiciing list {e}")
+        return
+
+    try:
         chord_data = chord_dict.get(str(difference))
     except KeyError:
-        pass
-    except AttributeError:
-        print(f"No Data for {root_note} for {currChord.figure}") 
+        print(f"voicing non-existent for {root_note} and {currChord.figure}")
         return
-        # do fallback style here
+    except AttributeError:
+        print(f"voicing non-existent for {root_note} and {currChord.figure}")
+        return
+    except Exception as e:
+        # Code to handle the exception
+        print(f"An unknown error occurred while trying to get the exact voicing")
+        return
+    if chord_data == []:
+        print(f"voicing for {root_note} and {currChord.figure} is unfinished")
+        return
 
     #create a note with the same properties as the root
     rootAsNote = note.Note(str(currChord.root()))
