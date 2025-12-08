@@ -2,28 +2,15 @@ from __future__ import annotations
 import builtins
 from music21 import chord, harmony, note
 from typing import Any, Mapping
+import builtins
 from config import SHOW_DEBUG_MESSAGES
+if not SHOW_DEBUG_MESSAGES:
+    print(f"Debugging is turned off. To turn it on use '-d' at the end")
 
-_PRINT_LIMIT = 50
-_print_count = 0
-_SUPPRESSION_NOTICE = (
-    "[chord_writer] Additional log output suppressed to keep the console readable."
-)
-
-
-def _limited_print(*args: Any, **kwargs: Any) -> None:
-    """Prevent runaway console spam from this module."""
-    global _print_count
-    if _print_count < _PRINT_LIMIT:
+def print(*args, **kwargs):
+    if SHOW_DEBUG_MESSAGES:
         builtins.print(*args, **kwargs)
-        _print_count += 1
-        if _print_count == _PRINT_LIMIT:
-            builtins.print(_SUPPRESSION_NOTICE)
-
-
-print = _limited_print
-
-
+        
 chordRouter = {
   "": "maj7",
   "+": "maj7",
@@ -71,10 +58,7 @@ chordRouter = {
 }
 
 #attrs = [attr for attr in dir(note) if not attr.startswith('_')]
-# if i have chordRouter loaded in here. will be it open the whole duration of the program?
-def _debug(message: str) -> None:
-    if SHOW_DEBUG_MESSAGES:
-        print(message)
+# if i have chordRouter loaded in here. will be it open the whole duration of the program?SHOW_DEBUG_MESSAGES
 
 
 def chordWriter(
@@ -82,12 +66,7 @@ def chordWriter(
     currChord: harmony.ChordSymbol,
     bible: Mapping[str, Any],
 ) -> chord.Chord:
-    _debug(
-        f"Harmonizing note {root_note!s} "
-        f"with chord {currChord.figure if currChord else 'None'}"
-    )
     if not currChord:
-        _debug("No existing chord found")
         return
 
     chord_data = None

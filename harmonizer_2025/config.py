@@ -14,11 +14,12 @@ REPLACE_EXISTING_CHORDS = True
 SELECTED_STYLE = "Stan Kenton"
 
 # logging and diagnostics
-SHOW_DEBUG_MESSAGES = False
+SHOW_DEBUG_MESSAGES = True
 
 # filesystem locations
 INPUT_FOLDER = PROJECT_ROOT / "testFiles"
 OUTPUT_FOLDER = PROJECT_ROOT / "testResults"
+SHEET_MUSIC_NAME = "chuWithChords.musicxml"
 
 BIBLE_FOLDER = PACKAGE_ROOT / "writing" / "data"
 BIBLE_PATH = BIBLE_FOLDER / "gptBible.json"
