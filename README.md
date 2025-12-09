@@ -1,26 +1,32 @@
-# Harmonizer 2025
+# jazzsolify
 
-Tiny playground package that works with MusicXML files using `music21`.
-
-## Install (editable for local dev)
-
-```bash
-pip install -e .
-```
+**Convert a single-line jazz melody (with chord symbols) into a harmonized sax-section soli in MusicXML.**
 
 ## Usage
 
-Programmatic:
+jazzsolify <input_basename> <style> [--debugging] [--replace]
 
-```python
-from harmonizer_2025 import load_musicxml
+- **input_basename** — filename without `.musicxml`
+- **style** — style name from the voicing bible
+- **--debugging** — verbose logging
+- **--replace** — re-harmonize existing chords instead of keeping them
 
-score = load_musicxml("path/to/file.musicxml")
-print(score)
-```
+Output is written to:
 
-CLI:
+output/<input_basename>_modified.musicxml
 
-```bash
-harmonizer-2025 path/to/file.musicxml
-```
+## Install (local dev)
+
+python -m pip install -e .
+
+## Customize Voicings (the "bible")
+
+Edit:
+
+jazzsoli/writing/data/bible.json
+
+Add or modify styles, chord families, and voicing rules.
+
+Run with your custom style:
+
+jazzsolify <input_basename> MyStyles.MyGeneric
