@@ -1,0 +1,11 @@
+Metadata-Version: 2.4
+Name: jazzsolify
+Version: 1.0.0
+Summary: Harmonize any Jazz solo (with chord changes) into a Jazz Soli.
+Requires-Python: >=3.8
+Requires-Dist: music21==9.9.1
+Requires-Dist: tqdm==4.67.1
+Requires-Dist: typer==0.20.0
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary

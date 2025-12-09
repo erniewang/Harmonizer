@@ -1,0 +1,1 @@
+"""Core package for the Harmonizer 2025 MusicXML playground."""

@@ -1,0 +1,10 @@
+setup.py
+jazzsoli/__init__.py
+jazzsoli/main.py
+jazzsolify.egg-info/PKG-INFO
+jazzsolify.egg-info/SOURCES.txt
+jazzsolify.egg-info/dependency_links.txt
+jazzsolify.egg-info/entry_points.txt
+jazzsolify.egg-info/requires.txt
+jazzsolify.egg-info/top_level.txt
+src/__init__.py

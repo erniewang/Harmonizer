@@ -1,0 +1,2 @@
+[console_scripts]
+jazzsolify = main:main
