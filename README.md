@@ -2,9 +2,11 @@
 
 **Convert a single-line jazz melody (with chord symbols) into a harmonized sax-section soli in MusicXML.**
 
-# Preview: Lester Young's solo on Lady Be Good
-# Audio: https://mega.nz/file/noZX2QAJ#Mb56spLucwrvacseJnkZxjiTl1-H4RilTWnqMiB5m_g
-# Sheet Music: https://musescore.com/user/41744844/scores/30067142
+Preview: Lester Young's solo on Lady Be Good
+Audio: https://mega.nz/file/noZX2QAJ#Mb56spLucwrvacseJnkZxjiTl1-H4RilTWnqMiB5m_g
+Sheet Music: https://musescore.com/user/41744844/scores/30067142
+
+Disclaimer: 5 minutes of manuall editing were to fix minor inconsistencies. Entire length of soli writing took less than 15 minutes as compared to at least 2 hours by hand. 
 
 ## Usage
 
