@@ -1,4 +1,4 @@
-# A J J J J Jazzsolify
+# Jazzsolify
 
 **Convert a single-line jazz melody (with chord symbols) into a harmonized sax-section soli in MusicXML.**
 
