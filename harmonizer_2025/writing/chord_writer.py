@@ -1,6 +1,7 @@
 from __future__ import annotations
 from music21 import chord, harmony, note
 from typing import Any, Mapping
+import logging
 
 chordRouter = {
   "": "maj7",
@@ -68,33 +69,48 @@ def chordWriter(
     try:
         chord_dict = bible.get(chordRouter[chord_figure])
     except KeyError:
-        print(f"chord {currChord.figure} does not exist in the router")
+        logging.warning("Chord %s does not exist in the router", currChord.figure)
         return
     except AttributeError:
         try:
-            print(f"{chordRouter[chord_figure]} does not exist in this version of the bible")
+            logging.warning(
+                "%s does not exist in this version of the bible",
+                chordRouter[chord_figure],
+            )
         except KeyError:
-            print(f"{chord_figure} does not exist in the router nor the bible")
+            logging.warning(
+                "%s does not exist in the router nor the bible",
+                chord_figure,
+            )
         return
     except Exception as e:
-        # Code to handle the exception
-        print(f"An unknown error occurred while trying to get the voiciing list {e}")
+        logging.error(
+            "An unknown error occurred while trying to get the voicing list: %s",
+            e,
+        )
         return
 
     try:
         chord_data = chord_dict.get(str(difference))
     except KeyError:
-        print(f"voicing non-existent for {root_note} and {currChord.figure}")
+        logging.warning(
+            "Voicing non-existent for %s and %s", root_note, currChord.figure
+        )
         return
     except AttributeError:
-        print(f"voicing non-existent for {root_note} and {currChord.figure}")
+        logging.warning(
+            "Voicing non-existent for %s and %s", root_note, currChord.figure
+        )
         return
-    except Exception as e:
-        # Code to handle the exception
-        print(f"An unknown error occurred while trying to get the exact voicing")
+    except Exception:
+        logging.error(
+            "An unknown error occurred while trying to get the exact voicing"
+        )
         return
     if chord_data == []:
-        print(f"voicing for {root_note} and {currChord.figure} is unfinished")
+        logging.warning(
+            "Voicing for %s and %s is unfinished", root_note, currChord.figure
+        )
         return
 
     #create a note with the same properties as the root
