@@ -2,6 +2,10 @@
 
 **Convert a single-line jazz melody (with chord symbols) into a harmonized sax-section soli in MusicXML.**
 
+# Preview: Lester Young's solo on Lady Be Good
+# Audio: https://mega.nz/file/noZX2QAJ#Mb56spLucwrvacseJnkZxjiTl1-H4RilTWnqMiB5m_g
+# Sheet Music: https://musescore.com/user/41744844/scores/30067142
+
 ## Usage
 
 jazzsolify <input_basename> <style> [--debugging] [--replace]
@@ -15,7 +19,7 @@ Output is written to:
 
 output/<input_basename>_modified.musicxml
 
-## Install (local dev)
+## Install (local dev) (within the Harmonizer folder)
 
 python -m pip install -e .
 
