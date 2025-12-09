@@ -1,16 +1,7 @@
 from __future__ import annotations
-import builtins
 from music21 import chord, harmony, note
 from typing import Any, Mapping
-import builtins
-from config import SHOW_DEBUG_MESSAGES
-if not SHOW_DEBUG_MESSAGES:
-    print(f"Debugging is turned off. To turn it on use '-d' at the end")
 
-def print(*args, **kwargs):
-    if SHOW_DEBUG_MESSAGES:
-        builtins.print(*args, **kwargs)
-        
 chordRouter = {
   "": "maj7",
   "+": "maj7",
@@ -64,11 +55,10 @@ chordRouter = {
 def chordWriter(
     root_note: note.Note,
     currChord: harmony.ChordSymbol,
-    bible: Mapping[str, Any],
+    bible: Mapping[str, Any]
 ) -> chord.Chord:
     if not currChord:
         return
-
     chord_data = None
     note_octave = root_note.octave
 
