@@ -1,7 +1,0 @@
-setup.py
-src/jazzsolify.egg-info/PKG-INFO
-src/jazzsolify.egg-info/SOURCES.txt
-src/jazzsolify.egg-info/dependency_links.txt
-src/jazzsolify.egg-info/entry_points.txt
-src/jazzsolify.egg-info/requires.txt
-src/jazzsolify.egg-info/top_level.txt
