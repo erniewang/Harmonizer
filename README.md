@@ -8,6 +8,9 @@
 
 ## Install
 
+Download the Zip file and unzip on your computer
+
+
 ```bash
 pip install .
 ```
